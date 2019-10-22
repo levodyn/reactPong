@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Animate } from 'react-move';
-import ballImage from '../data/images/ball.png';
+//import ballImage from '../data/images/ball.png';
 import Vector from '../models/Vector';
 
 class Ball extends Component {
@@ -9,19 +9,19 @@ class Ball extends Component {
 
     constructor(props) {
         super(props);
-        let velocity =  new Vector(1,1,1000 * (this.refreshRate/1000));
+        let velocity =  new Vector(1,1,30 * (this.refreshRate/1000));
         this.state = {
-            left: 250,
-            top: 250,
+            left: 50,
+            top: 50,
             velocity: velocity,
-            ballWidth: 50,
-            ballHeight: 50,
-            duration: 300,
+            ballWidth: 25,
+            ballHeight: 25,
+            duration: 300
         };
     }
     
     componentDidMount() {
-        this.interval = setInterval(() => this.move(), this.refreshRate);
+       this.interval = setInterval(() => this.move(), this.refreshRate);
     }
 
     componentWillUnmount() {
@@ -36,12 +36,12 @@ class Ball extends Component {
         left = this.maxMinAdjustment(
             left+(velocity.vx*velocity.length),
             0,
-            this.props.FieldWidth-ballWidth
+            100
         );        
         top = this.maxMinAdjustment(
             top-(velocity.vy*velocity.length),
             0,
-            this.props.FieldHeight-ballHeight
+            100
         );       
         
         this.setState({
@@ -49,6 +49,9 @@ class Ball extends Component {
           top: top,
           velocity:velocity
         });
+
+        
+        this.props.setVelocityIndicator();
     }
 
     maxMinAdjustment(value, min, max) {
@@ -63,19 +66,21 @@ class Ball extends Component {
 
     calcNewVelocity(velocity) {
         let {left, ballWidth, top, ballHeight} = this.state;
-        if(left <= 0 || left >= this.props.FieldWidth-ballWidth) {
+        if(left <= 0 || left >= 100) {
             velocity.inverse('x');
         } 
-        if(top <= 0 || top >= this.props.FieldHeight-ballHeight) {
+        if(top <= 0 || top >= 100) {
             velocity.inverse('y');
         } 
         return velocity;
     }
 
     changeDirection() {
+        let leftOrRight = Math.random() > 0.5 ? -1 : 1;
+        let upOrDown = Math.random() > 0.5 ? -1 : 1;
         let newVelocity = new Vector(
-            Math.random(),
-            Math.random(),
+            Math.random()*leftOrRight,
+            Math.random()*upOrDown,
             this.state.velocity.length
         );
         
@@ -84,32 +89,45 @@ class Ball extends Component {
         });
     }
 
+    getSpeed() {
+        let {velocity} = this.state;
+        return velocity.length / (this.refreshRate/1000)
+    }
+
+    setSpeed(speed) {
+        let {velocity} = this.state;
+        let newVelocity = new Vector(velocity.vx,velocity.vy,speed * (this.refreshRate/1000));
+        this.setState({
+            velocity: newVelocity
+        });
+    }
+
     render() {
-      let { left, top, duration } = this.state;
+      let { left, top, duration, ballWidth, ballHeight } = this.state;
       return (
-        <div className="ball">
             <Animate   
                 duration={duration}
                 easing='easeQuadIn' 
             >
                 {data => (
                     <div
+                        className = "ball"
                         style={{
-                            transform: `translate(${left}px, ${top}px)`,
+                            top: `${top}%`,
+                            left: `${left}%`,
                             position: 'relative',
-                            width: 50,
-                            height: 50,
+                            width: `${ballWidth}px`,
+                            height: `${ballHeight}px`,
                             display: 'flex',
                             justifyContent: 'center',
                             alignItems: 'center',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            backgroundColor: 'white'
                         }}
                     >
-                        <img src={ballImage} alt=""/>
                     </div>
                 )}
             </Animate>   
-        </div>
       );
     }
   }

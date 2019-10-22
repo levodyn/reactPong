@@ -1,16 +1,20 @@
 import React, { Component } from 'react';
 
 import Ball from './Ball';
+import Paddle from './Paddle';
 
 class Field extends Component {
+
+    ball;
 
     constructor(props) {
         super(props);
         this.ball = React.createRef();
+        this.velocityIndicator = React.createRef();
+        this.speedIndicator = React.createRef();
         this.state = {
-            width: 1000,
-            height: 500,
-            ball: this.ball
+            width: 50,
+            height: 50
         };
     }
 
@@ -18,34 +22,53 @@ class Field extends Component {
         this.ball.current.changeDirection();
     }
 
-    getBallSpeed = () => {
-        return this.ball.current.state.velocity.length
+    setVelocityIndicator = () => {
+        if(this.velocityIndicator.current) {
+          this.velocityIndicator.current.value = `(${
+              this.ball.current.state.velocity.vx.toPrecision(2)
+            },${
+                this.ball.current.state.velocity.vy.toPrecision(2)
+            })`;
+          this.speedIndicator.current.value = `${this.ball.current.getSpeed()} %/s`;
+
+        }
     }
 
     render() {
-        let {width,height, ball} = this.state;
+        let {width,height} = this.state;
 
         let css = {
             field: {
                 backgroundColor: 'black', 
-                width: width,
-                height: height,
+                height: `${height}vh`,
                 position: 'relative',
                 border: '2px solid black',
-                left: '25%'
+                marginTop: '100px' 
             },
             velocityInput: {
                 position: 'relative',
                 color: 'white',
-                top: -50,
-                left: 0,
-                backgroundColor: 'black', 
+                backgroundColor: 'transparent', 
+                border: '0px solid'
             }
         };
         return (
-            <div className = "field" style={css.field}  onClick={this.clickField}>
-                <Ball FieldWidth={width} FieldHeight = {height} ref={this.ball}/>
-                <input style={css.velocityInput} type="text" defaultValue='' value={this.getBallSpeed} />
+            <div className = "field col-12" style={css.field}  onClick={this.clickField}>
+                <Ball
+                    setVelocityIndicator = {this.setVelocityIndicator}
+                    ref={this.ball}
+                />
+                <div>
+                    <span style={css.velocityInput}>Speed: </span><input style={css.velocityInput} type="text" defaultValue='' ref={this.speedIndicator} />
+                </div>
+                <div>
+                    <span style={css.velocityInput}>Velocity: </span><input style={css.velocityInput} type="text" defaultValue='' ref={this.velocityIndicator} />
+                </div>
+                
+                <Paddle 
+                    FieldWidth = {width} 
+                    FieldHeight = {height} 
+                />
             </div>
         )
     }
