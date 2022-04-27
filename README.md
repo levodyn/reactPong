@@ -1,3 +1,5 @@
+This is a self learning project to learn React by trying to recreate the old game Pong. It is still a work in progress. Currently you can see a ball moving through a field and it shows the velocity it is moving at and its speed. You can click in the field to give the ball a new random velocity with the same length. 
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
