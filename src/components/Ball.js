@@ -6,10 +6,11 @@ import Vector from '../models/Vector';
 class Ball extends Component {
     
     refreshRate = 25;
+    maxTop = 95;
 
     constructor(props) {
         super(props);
-        let velocity =  new Vector(1,1,30 * (this.refreshRate/1000));
+        let velocity =  new Vector(1,1,40 * (this.refreshRate/1000));
         this.state = {
             left: 50,
             top: 50,
@@ -29,9 +30,11 @@ class Ball extends Component {
     }
 
     move = () => {
-        let {left, top, ballWidth, ballHeight, velocity} = this.state;
+        let {left, top, velocity} = this.state;
 
-        velocity = this.calcNewVelocity(velocity);
+        if (this.isCollided()) {
+          this.inverseVelocity()
+        }
 
         left = this.maxMinAdjustment(
             left+(velocity.vx*velocity.length),
@@ -41,7 +44,7 @@ class Ball extends Component {
         top = this.maxMinAdjustment(
             top-(velocity.vy*velocity.length),
             0,
-            100
+            this.maxTop
         );       
         
         this.setState({
@@ -64,18 +67,30 @@ class Ball extends Component {
         }
     }
 
-    calcNewVelocity(velocity) {
-        let {left, ballWidth, top, ballHeight} = this.state;
+    isCollided()
+    {
+        let {left, top} = this.state;
+        if(left <= 0 || left >= 100) {
+            return true;
+        } 
+        if(top <= 0 || top >= this.maxTop) {
+            return true;
+        }
+
+        return false;
+    }
+
+    inverseVelocity() {
+        let {left, top, velocity} = this.state;
         if(left <= 0 || left >= 100) {
             velocity.inverse('x');
         } 
-        if(top <= 0 || top >= 100) {
+        if(top <= 0 || top >= this.maxTop) {
             velocity.inverse('y');
         } 
-        return velocity;
     }
 
-    changeDirection() {
+    changeVelocityToRandomDirection() {
         let leftOrRight = Math.random() > 0.5 ? -1 : 1;
         let upOrDown = Math.random() > 0.5 ? -1 : 1;
         let newVelocity = new Vector(

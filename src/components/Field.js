@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 import Ball from './Ball';
-import Paddle from './Paddle';
 
 class Field extends Component {
 
@@ -19,7 +18,7 @@ class Field extends Component {
     }
 
     clickField = () => {
-        this.ball.current.changeDirection();
+        this.ball.current.changeVelocityToRandomDirection();
     }
 
     setVelocityIndicator = () => {
@@ -35,7 +34,7 @@ class Field extends Component {
     }
 
     render() {
-        let {width,height} = this.state;
+        let {height} = this.state;
 
         let css = {
             field: {
@@ -62,13 +61,9 @@ class Field extends Component {
                     <span style={css.velocityInput}>Speed: </span><input style={css.velocityInput} type="text" defaultValue='' ref={this.speedIndicator} />
                 </div>
                 <div>
-                    <span style={css.velocityInput}>Velocity: </span><input style={css.velocityInput} type="text" defaultValue='' ref={this.velocityIndicator} />
+                    <span style={css.velocityInput}>Velocity vector: </span><input style={css.velocityInput} type="text" defaultValue='' ref={this.velocityIndicator} />
                 </div>
-                
-                <Paddle 
-                    FieldWidth = {width} 
-                    FieldHeight = {height} 
-                />
+
             </div>
         )
     }
